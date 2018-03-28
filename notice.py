@@ -29,32 +29,39 @@ for i in range(1, int(last_page) + 1):
     notice_scholar_meta = soup.select('#content > div.postList > ul > li > span.meta')
     notice_scholar_date = soup.select('#content > div.postList > ul > li > span.meta > span')
     notice_scholar_post_url = soup.select('#content > div.postList > ul > li > a')
-    
+
 
     for t, d, m, u in zip(notice_scholar_title, notice_scholar_date, notice_scholar_meta, notice_scholar_post_url):
 
         remove_digits = str.maketrans('','', digits)
         m = m.text.translate(remove_digits).replace('/', '')
-        
+
         print("제목: " + t.text.strip())
         print("날짜: " + d.text.strip())
         print("작성: " + m)
 
-       
+
 
         driver.get(u['href'])
         html = driver.page_source
         soup = BeautifulSoup(html, 'html.parser')
 
-        post_content = soup.select('#content > table > tbody > tr > td')
+        post_content = soup.select('#content > table > tbody > tr > td > p > a > img')
+    
+        if not post_content:
+            post_content = soup.select('#content > table > tbody > tr > td')
+    
+            content = ""
 
-        content = ""
-        
-        for item in post_content:
-            content += item.text
-        
-        print(content.strip())
-        print("")
-        print('-' * 30)
-        print("")
+            for item in post_content:
+                if item:
+                    content += item.text
 
+            print(content.strip())
+            print("")
+            print('-' * 30)
+            print("")
+
+        else:
+
+            print(post_content)
